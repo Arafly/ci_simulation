@@ -1,6 +1,6 @@
 ## Simulating a typical CI/CD Pipeline for a PHP Based application
 
-*image cid/ci piepline
+![](CI_CD-Pipeline-For-PHP-ToDo-Application.png)
 
 To get started, we will focus on these environments initially.
 
@@ -10,15 +10,15 @@ To get started, we will focus on these environments initially.
 
 What we want to achieve, is having Nginx to serve as a reverse proxy for our sites and tools. Each environment setup is represented in the below table and diagrams.
 
-*image table env
+![](https://github.com/Arafly/ci_simulation/blob/master/assets/Environment-setup.png)
 
 ### CI Env
 
-*image for ci
+![](Project-14-CI-Environment.png)
 
 ### Other Env
 
-*image for other envs
+![](https://github.com/Arafly/ci_simulation/blob/master/assets/Project-14-Pentest-Environment.png)
 
 <!-- DNS requirements
 Make DNS entries to create a subdomain for each environment. Assuming your main domain is darey.io
@@ -122,5 +122,42 @@ pentest-tooling
 <Pentest-for-Tooling-Private-IP-Address>
 ```
 
-Observations:
+### Ansible Roles for CI Environment
+
+Add two more roles to ansible:
+
+- SonarQube
+- Artifactory
+
+SonarQube is an open-source platform developed by SonarSource for continuous inspection of code quality, it is used to perform automatic reviews with static analysis of code to detect bugs, code smells, and security vulnerabilities.
+
+Artifactory on the other hand, is a product by JFrog that serves as a binary repository manager. The binary repository is a natural extension to the source code repository, in that the outcome of your build process is stored.
+
+### Configuring Ansible For Jenkins Deployment
+
+In the previous projects, we've been launching Ansible commands manually from the CLI. Now, with Jenkins, we'll do so from Jenkins UI.
+
+In order to achieve this, you must:
+- Navigate to Jenkins URL
+- Install & Open Blue Ocean Jenkins Plugin
+
+- Create a new pipeline
+
+*image initial
+*image vcs
+
+- connect Jenkins to a version control (GitHub) with an access token
+
+*image access_token
+
+- Paste back the token from GitHub and create a new Pipeline
+
+*image blue_ocean
+*image project
+
+At this point you may not have a Jenkinsfile in the Ansible repository, so Blue Ocean will attempt to give you some guidance to create one. But we do not need that. We will rather create one ourselves. So, click on Administration to exit the Blue Ocean console.
+
+
+### Create Jenkinsfile
+Inside the Ansible project, create a new directory deploy and start a new file Jenkinsfile inside the directory.
 
