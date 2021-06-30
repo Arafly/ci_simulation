@@ -185,7 +185,46 @@ pipeline {
 
 - Scroll down to Build Configuration section and specify the location of the Jenkinsfile at deploy/Jenkinsfile
 
-*image deploy/Jenkinsfile
-
 - Once you click on "save" you start to see the build process
+
+*image build
+
+> To really appreciate and feel the difference of Cloud Blue UI, it is recommended to try triggering the build again from Blue Ocean interface.
+
+*image blue-ocean
+
+Notice that this pipeline is a multibranch one. This means, if there were more than one branch in GitHub, Jenkins would have scanned the repository to discover them all and we would have been able to trigger a build for each branch.
+
+We can demonstrate this by:
+
+1.Create a new git branch and name it feature/jenkinspipeline-stages
+
+2. We only have the Build stage. Let's add another stage called Test. 
+Paste the code snippet below and push the new changes to GitHub.
+
+
+```
+ pipeline {
+    agent any
+
+  stages {
+    stage('Build') {
+      steps {
+        script {
+          sh 'echo "Building Stage"'
+        }
+      }
+    }
+
+    stage('Test') {
+      steps {
+        script {
+          sh 'echo "Testing Stage"'
+        }
+      }
+    }
+    }
+}
+```
+
 
