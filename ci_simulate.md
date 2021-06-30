@@ -159,5 +159,33 @@ At this point you may not have a Jenkinsfile in the Ansible repository, so Blue 
 
 
 ### Create Jenkinsfile
-Inside the Ansible project, create a new directory deploy and start a new file Jenkinsfile inside the directory.
+- Inside the Ansible project, create a new directory deploy and start a new file Jenkinsfile inside the directory.
+- Add the code snippet below to start building the Jenkinsfile gradually. This pipeline currently has just one stage called Build and the only thing we are doing is using the shell script module to echo Building Stage
+
+```
+pipeline {
+    agent any
+
+
+  stages {
+    stage('Build') {
+      steps {
+        script {
+          sh 'echo "Building Stage"'
+        }
+      }
+    }
+    }
+}
+```
+
+- Return to the Ansible pipeline in Jenkins, and select configure
+
+*image configure
+
+- Scroll down to Build Configuration section and specify the location of the Jenkinsfile at deploy/Jenkinsfile
+
+*image deploy/Jenkinsfile
+
+- Once you click on "save" you start to see the build process
 
