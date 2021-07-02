@@ -143,8 +143,9 @@ In order to achieve this, you must:
 
 - Create a new pipeline
 
-*image initial
-*image vcs
+![](https://github.com/Arafly/ci_simulation/blob/master/assets/initial.png)
+
+![](https://github.com/Arafly/ci_simulation/blob/master/assets/vcs.png)
 
 - connect Jenkins to a version control (GitHub) with an access token
 
@@ -181,7 +182,7 @@ pipeline {
 
 - Return to the Ansible pipeline in Jenkins, and select configure
 
-*image configure
+![](https://github.com/Arafly/ci_simulation/blob/master/assets/configure.png)
 
 - Scroll down to Build Configuration section and specify the location of the Jenkinsfile at deploy/Jenkinsfile
 
@@ -191,7 +192,7 @@ pipeline {
 
 > To really appreciate and feel the difference of Cloud Blue UI, it is recommended to try triggering the build again from Blue Ocean interface.
 
-*image blue-ocean
+![](https://github.com/Arafly/ci_simulation/blob/master/assets/blue_ocean.png)
 
 Notice that this pipeline is a multibranch one. This means, if there were more than one branch in GitHub, Jenkins would have scanned the repository to discover them all and we would have been able to trigger a build for each branch.
 
@@ -199,9 +200,8 @@ We can demonstrate this by:
 
 1.Create a new git branch and name it feature/jenkinspipeline-stages
 
-2. We only have the Build stage. Let's add another stage called Test. 
+2. We only have the Build stage. Let's add another stage called Test.
 Paste the code snippet below and push the new changes to GitHub.
-
 
 ```
  pipeline {
@@ -226,5 +226,110 @@ Paste the code snippet below and push the new changes to GitHub.
     }
 }
 ```
+In order to make your new branch show up in Jenkins, we need to tell Jenkins to scan the repository.
+- Navigate to the Ansible project and click on “Scan repository now”
+- Refresh the page and both branches will start building automatically. You can go into Blue Ocean and see both branches there too.
 
+*image feature_branch
+*image feature_blueocen
+
+## Additional Task
+1. Create a pull request to merge the latest code into the `main branch`
+2. After merging the `PR`, go back into your terminal and switch into the `main` branch.
+3. Pull the latest change.
+4. Create a new branch, add more stages into the Jenkins file to simulate below phases. (Just add an `echo` command like we have in `build` and `test` stages)
+   - Package 
+   - Deploy 
+   - Clean up
+5. Verify in Blue Ocean that all the stages are working, then merge your feature branch to the main branch
+6. Eventually, your main branch should have a successful pipeline like this in blue ocean
+
+```
+$ git checkout -b features/jenkinspipeline-multistage
+Switched to a new branch 'features/jenkinspipeline-multistage'
+araflyayinde@jenkins:~/ansible$ git branch -vv
+  feature/jenkinspipeline-stages      d111d6c [origin/feature/jenkinspipeline-stages] additiona
+l Jenkinsfile
+* features/jenkinspipeline-multistage a306dfa mod
+  master                              a306dfa [origin/master] mod
+```
+
+- Enter your deploy/Jenkinsfile and modify
+
+```
+pipeline {
+  agent any
+
+  stages {
+    stage('Build') {
+      steps {
+        script {
+          sh 'echo "Building Stage"'
+        }
+      }
+    }
+
+    stage('Test') {
+      steps {
+        script {
+          sh 'echo "Testing Stage"'
+        }
+      }
+    }
+
+    stage('Package') {
+      steps {
+        script {
+          sh 'echo "Packaging Stage at this point"'
+        }
+      }
+    }
+
+    stage('Deploy') {
+      steps {
+        script {
+          sh 'echo "Deploying Stage"'
+        }
+      }
+    }
+
+    stage('Clean up') {
+      steps {
+        script {
+          sh 'echo "Cleaning up..."'
+        }
+      }
+    }
+  }
+
+}
+```
+
+```
+$ git status
+On branch features/jenkinspipeline-multistage
+Your branch is up to date with 'origin/features/jenkinspipeline-multistage'.
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   deploy/Jenkinsfile
+no changes added to commit (use "git add" and/or "git commit -a")
+araflyayinde@jenkins:~/ansible$ git add .
+araflyayinde@jenkins:~/ansible$ git commit -m "Jenkinsfile further edit"
+[features/jenkinspipeline-multistage feea2e3] Jenkinsfile further edit
+ 1 file changed, 16 insertions(+), 16 deletions(-)
+
+$ git push
+Enumerating objects: 7, done.
+Counting objects: 100% (7/7), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (4/4), 405 bytes | 405.00 KiB/s, done.
+Total 4 (delta 2), reused 0 (delta 0)
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To https://github.com/Arafly/ansible_refactor.git
+   f642ab8..feea2e3  features/jenkinspipeline-multistage -> features/jenkinspipeline-multistage
+```
+
+*image multistage
 
