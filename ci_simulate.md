@@ -230,16 +230,17 @@ In order to make your new branch show up in Jenkins, we need to tell Jenkins to 
 - Navigate to the Ansible project and click on “Scan repository now”
 - Refresh the page and both branches will start building automatically. You can go into Blue Ocean and see both branches there too.
 
-*image feature_branch
-*image feature_blueocen
+![](https://github.com/Arafly/ci_simulation/blob/master/assets/feature_branch.png)
+
+![](https://github.com/Arafly/ci_simulation/blob/master/assets/feature_blueocean.png)
 
 ## Additional Task
 1. Create a pull request to merge the latest code into the `main branch`
 2. After merging the `PR`, go back into your terminal and switch into the `main` branch.
 3. Pull the latest change.
 4. Create a new branch, add more stages into the Jenkins file to simulate below phases. (Just add an `echo` command like we have in `build` and `test` stages)
-   - Package 
-   - Deploy 
+   - Package
+   - Deploy
    - Clean up
 5. Verify in Blue Ocean that all the stages are working, then merge your feature branch to the main branch
 6. Eventually, your main branch should have a successful pipeline like this in blue ocean
@@ -331,5 +332,22 @@ To https://github.com/Arafly/ansible_refactor.git
    f642ab8..feea2e3  features/jenkinspipeline-multistage -> features/jenkinspipeline-multistage
 ```
 
-*image multistage
+![](https://github.com/Arafly/ci_simulation/blob/master/assets/multistage.png)
+
+### Running Ansible Playbook from Jenkins
+
+Now that we've got a broad overview of a typical Jenkins pipeline. Let's get the actual Ansible deployment to work by:
+
+- Installing Ansible on Jenkins.
+- Installing Ansible plugin in Jenkins UI
+- Creating Jenkinsfile from scratch. (Delete all you currently have in there and start all over to get Ansible to run successfully)
+
+You can watch a 10 minutes video <https://youtu.be/PRpEbFZi7nI> to guide you through the entire setup
+
+Note: Ensure that Ansible runs against the Dev environment successfully.
+
+**Possible errors to watch out for:**
+
+- Ensure that the git module in Jenkinsfile is checking out SCM to main branch instead of master.
+- Jenkins needs to export the ANSIBLE_CONFIG environment variable. You can put the .ansible.cfg file alongside Jenkinsfile in the deploy directory. This way, anyone can easily identify that everything in there relates to deployment. Then, using the Pipeline Syntax tool in Ansible, generate the syntax to create environment variables to set.
 
