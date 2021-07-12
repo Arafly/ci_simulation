@@ -346,8 +346,37 @@ You can watch a 10 minutes video <https://youtu.be/PRpEbFZi7nI> to guide you thr
 
 Note: Ensure that Ansible runs against the Dev environment successfully.
 
-**Possible errors to watch out for:**
+```
+$ ansible Dev_webserver -i inventory -m ping
+Dev_webserver | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+```
 
-- Ensure that the git module in Jenkinsfile is checking out SCM to main branch instead of master.
-- Jenkins needs to export the ANSIBLE_CONFIG environment variable. You can put the .ansible.cfg file alongside Jenkinsfile in the deploy directory. This way, anyone can easily identify that everything in there relates to deployment. Then, using the Pipeline Syntax tool in Ansible, generate the syntax to create environment variables to set.
+*Because of the numerous build failure I got on Jenkins. I had to execute my playbook from my Ansible controller, so I can easily debug by appending "-vvv" to my playbook execution.*
+
+> **Gotcha**
+Make sure your index.html file is residing inside your "playbooks" folder 
+
+```
+$ ansible-playbook playbooks/apache.yml -i inventory/dev
+PLAY [webservers] *************************************************************************************************************************************************************
+TASK [Gathering Facts] ********************************************************************************************************************************************************
+ok: [Dev_webserver]
+TASK [Install packages] *******************************************************************************************************************************************************
+ok: [Dev_webserver]
+TASK [Start Apache server] ****************************************************************************************************************************************************
+ok: [Dev_webserver]
+TASK [Deploy static website] **************************************************************************************************************************************************
+ok: [Dev_webserver]
+PLAY RECAP ********************************************************************************************************************************************************************
+Dev_webserver              : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+```
+
+*image dev_build
+
 
