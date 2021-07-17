@@ -420,15 +420,15 @@ From now on, each time you hit on execute, it will expect an input.
 > Gotcha!
 You have to use the "blue ocean' to this properly in action.
 
-*image sit_run
+![](https://github.com/Arafly/ci_simulation/blob/master/assets/sit_run.png)
 
-*image Jenkins_parameter
+![](https://github.com/Arafly/ci_simulation/blob/master/assets/Jenkins-Parameter.png)
 
 - Notice that the default value loads up, but we can now specify which environment we want to deploy the configuration to. Simply type sit and hit Run
 
-*image jenkins_parmeter_sit
+![](https://github.com/Arafly/ci_simulation/blob/master/assets/Jenkins-Parameter-Sit.png)
 
-*image sit_aftermath
+![](https://github.com/Arafly/ci_simulation/blob/master/assets/sit_aftermath.png)
 
 ## CI/CD Pipeline for TODO application
 
@@ -436,5 +436,29 @@ We already have tooling website as a part of deployment through Ansible. Here we
 
 Our goal here is to deploy the application onto servers directly from Artifactory rather than from git.
 Use this guide to create an [Ansible role for Artifactory](https://www.howtoforge.com/tutorial/ubuntu-jfrog/) (ignore the Nginx part). Configure Artifactory on Ubuntu 20.04
+
+If all went succesfully. You should have the Jfrog Artifactory UI page, like this:
+
+*image artifactory
+
+### Phase 1 - Prepare Jenkins
+
+1. Fork the repository below into your GitHub account
+
+`https://github.com/darey-devops/php-todo.git`
+
+- On your Jenkins server, install PHP, its dependencies including the Composer tool (Feel free to do this manually at first, then update your Ansible accordingly later)
+
+`
+sudo apt install -y zip libapache2-mod-php phploc php-{xml,bcmath,bz2,intl,gd,mbstring,mysql,zip}`
+
+2. Install Jenkins plugins
+  - Plot plugin
+  - Artifactory plugin
+
+- We'll use the plot plugin to the display tests reports, and code coverage-related nformation.
+
+- The Artifactory plugin will be used to easily upload code artifacts into an Artifactory server.
+In Jenkins UI configure Artifactory
 
 
