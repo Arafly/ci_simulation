@@ -360,7 +360,7 @@ Dev_webserver | SUCCESS => {
 *Because of the numerous build failure I got on Jenkins. I had to execute my playbook from my Ansible controller, so I can easily debug by appending "-vvv" to my playbook execution.*
 
 > **Gotcha**
-Make sure your index.html file is residing inside your "playbooks" folder 
+Make sure your index.html file is residing inside your "playbooks" folder
 
 ```
 $ ansible-playbook playbooks/apache.yml -i inventory/dev
@@ -377,6 +377,64 @@ PLAY RECAP *********************************************************************
 Dev_webserver              : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
 
-*image dev_build
+![](https://github.com/Arafly/ci_simulation/blob/master/assets/dev_build.png)
+
+### Parameterizing Jenkinsfile For Ansible Deployment
+
+To deploy to other environments, we will need to use parameters.
+
+- Update sit inventory with new servers
+
+```
+[tooling]
+<SIT-Tooling-Web-Server-Private-IP-Address>
+
+[todo]
+<SIT-Todo-Web-Server-Private-IP-Address>
+
+[nginx]
+<SIT-Nginx-Private-IP-Address>
+
+[db:vars]
+ansible_user=ec2-user
+ansible_python_interpreter=/usr/bin/python
+
+[db]
+<SIT-DB-Server-Private-IP-Address>
+```
+
+- Update Jenkinsfile to introduce parameterization. Below is just one parameter. It has a default value in case if no value is specified at execution. It also has a description so that everyone is aware of its purpose.
+
+```
+pipeline {
+    agent any
+
+    parameters {
+      string(name: 'inventory', defaultValue: 'dev',  description: 'This is the inventory file for the environment to deploy configuration')
+    }
+```
+
+- In the Ansible execution section, remove the hardcoded inventory/dev and replace with `${inventory}
+From now on, each time you hit on execute, it will expect an input.
+
+> Gotcha!
+You have to use the "blue ocean' to this properly in action.
+
+*image sit_run
+
+*image Jenkins_parameter
+
+- Notice that the default value loads up, but we can now specify which environment we want to deploy the configuration to. Simply type sit and hit Run
+
+*image jenkins_parmeter_sit
+
+*image sit_aftermath
+
+## CI/CD Pipeline for TODO application
+
+We already have tooling website as a part of deployment through Ansible. Here we'll introduce another PHP application to add to the list of software products we are managing in our infrastructure. The good thing with this particular application is that it has unit tests, and it is an ideal application to show an end-to-end CI/CD pipeline for a particular application.
+
+Our goal here is to deploy the application onto servers directly from Artifactory rather than from git.
+Use this guide to create an [Ansible role for Artifactory](https://www.howtoforge.com/tutorial/ubuntu-jfrog/) (ignore the Nginx part). Configure Artifactory on Ubuntu 20.04
 
 
