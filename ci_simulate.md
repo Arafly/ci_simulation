@@ -439,7 +439,7 @@ Use this guide to create an [Ansible role for Artifactory](https://www.howtoforg
 
 If all went succesfully. You should have the Jfrog Artifactory UI page, like this:
 
-*image artifactory
+![](https://github.com/Arafly/ci_simulation/blob/master/assets/artifactory.png)
 
 ### Phase 1 - Prepare Jenkins
 
@@ -459,6 +459,68 @@ sudo apt install -y zip libapache2-mod-php phploc php-{xml,bcmath,bz2,intl,gd,mb
 - We'll use the plot plugin to the display tests reports, and code coverage-related nformation.
 
 - The Artifactory plugin will be used to easily upload code artifacts into an Artifactory server.
-In Jenkins UI configure Artifactory
 
+- Enter the "Manage Jenkins" and go to JFrog section and update the Server ID, URL, Credentials and Test the connection
+
+### Phase 2 - Integrate Artifactory repository with Jenkins
+
+Create a dummy Jenkinsfile in the repository
+Using Blue Ocean, create a multibranch Jenkins pipeline
+
+On the database server, create a database and user.
+
+```
+Create database homestead;
+CREATE USER 'homestead'@'%' IDENTIFIED BY 'sePret^i';
+GRANT ALL PRIVILEGES ON * . * TO 'homestead'@'%';
+```
+
+- Update the database connectivity requirements in the file .env.sample
+- Update Jenkinsfile with proper pipeline configuration
+
+```
+pipeline {
+    agent any
+
+  stages {
+
+     stage("Initial cleanup") {
+          steps {
+            dir("${WORKSPACE}") {
+              deleteDir()
+            }
+          }
+        }
+  
+    stage('Checkout SCM') {
+      steps {
+            git branch: 'main', url: 'https://github.com/darey-devops/php-todo.git'
+      }
+    }
+
+    stage('Prepare Dependencies') {
+      steps {
+             sh 'mv .env.sample .env'
+             sh 'composer install'
+             sh 'php artisan migrate'
+             sh 'php artisan db:seed'
+             sh 'php artisan key:generate'
+      }
+    }
+  }
+}
+```
+
+1. The required file by PHP is .env so we are renaming .env.sample to .env
+2. Composer is used by PHP to install all the dependent libraries used by the application
+3. php artisan uses the .env file to setup the required database objects - (After successful run of this step, login to the database, run show tables and you will see the tables being created for you).
+
+- Update the Jenkinsfile to include Unit tests step
+
+```
+    stage('Execute Unit Tests') {
+      steps {
+             sh './vendor/bin/phpunit'
+      } 
+```
 
